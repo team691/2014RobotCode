@@ -3,6 +3,7 @@
 #ifndef VALUES_H
 #define VALUES_H
 
+	const int ANALOG_MODULE = 1;
 	const int SIDECAR_R = 1;
 	const int SIDECAR_L = 2;
 
@@ -78,5 +79,10 @@
 	const int R_INTAKE_VICTOR = 8;
 	const int L_INTAKE_VICTOR = 8;
 	const int INTAKE_VICTOR_SIDECARS[2] = {SIDECAR_R, SIDECAR_L};
+
+	const int GOAL_PHOTOSENSOR = 1;
+	const int GOAL_PHOTOSENSOR_MODULE = ANALOG_MODULE;
+	const double GOAL_PHOTOSENSOR_LOWER_BOUND = 3.0;
+	const double GOAL_PHOTOSENSOR_UPPER_BOUND = 5.0;
 
 #endif //VALUES_H

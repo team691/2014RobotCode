@@ -39,7 +39,7 @@ private:
 	bool shoot;
 	bool move;
 	double time;
-	DigitalInput photosensor;
+	AnalogTrigger photosensor;
 
 public:
 	Robot(void): joy(JOYSTICK),
@@ -64,11 +64,11 @@ public:
 				 shooter(SHOOTER_VICTOR_SIDECAR, SHOOTER_VICTOR),
 				 rIntake(INTAKE_VICTOR_SIDECARS[0], R_INTAKE_VICTOR),
 				 lIntake(INTAKE_VICTOR_SIDECARS[1], L_INTAKE_VICTOR),
-				 check(true),
+				 check(false),
 				 shoot(false),
 				 move(false),
 				 time(GetTime()),
-				 photosensor(GOAL_PHOTOSENSOR_SIDECAR, GOAL_PHOTOSENSOR)
+				 photosensor(GOAL_PHOTOSENSOR_MODULE, GOAL_PHOTOSENSOR)
 	{
 		frEnc.SetDistancePerPulse(FR_DRIVE_ENCODER_DISTANCE_PER_PULSE);
 		flEnc.SetDistancePerPulse(FL_DRIVE_ENCODER_DISTANCE_PER_PULSE);
@@ -82,6 +82,7 @@ public:
 		flEnc.Start();
 		brEnc.Start();
 		blEnc.Start();
+		photosensor.SetLimitsVoltage(GOAL_PHOTOSENSOR_LOWER_BOUND, GOAL_PHOTOSENSOR_UPPER_BOUND);
 	}
 
 	/**
@@ -99,12 +100,48 @@ public:
 	}
 
 	/**
-	 * Print a message stating that the robot has entered autonomous mode.
+	 * Wait for the hot goal, shoot, then drive forward for 2 seconds.
 	 */
 	void Autonomous(void) {
 		printf("Autonomous mode enabled!\n");
+		check = true;
+		shoot = false;
+		move = false;
+		time = GetTime();
+		printf("Check: %s, Shoot: %s, Move: %s, LastTime: %f, CurrentTime: %f\n", check ? "T" : "F", shoot ? "T" : "F", move ? "T" : "F", time, GetTime());
 		while(IsEnabled() && IsAutonomous()) {
-
+			if(check) {
+				if(photosensor.GetInWindow() == false) {
+					Wait(5.5);
+				}
+				check = false;
+				shoot = true;
+				time = GetTime();
+				printf("Check: %s, Shoot: %s, Move: %s, LastTime: %f, CurrentTime: %f\n", check ? "T" : "F", shoot ? "T" : "F", move ? "T" : "F", time, GetTime());
+			}
+			if(shoot) {
+				shooter.SetSpeed(1.0);
+				if(GetTime() - time >= 2.0) {
+					shooter.SetSpeed(0.0);
+					shoot = false;
+					move = true;
+					time = GetTime();
+					printf("Check: %s, Shoot: %s, Move: %s, LastTime: %f, CurrentTime: %f\n", check ? "T" : "F", shoot ? "T" : "F", move ? "T" : "F", time, GetTime());
+				} else {
+					Wait(0.005);
+				}
+			}
+			if(move) {
+				drive.update(0.5, 0.0, 0.0);
+				if(GetTime() - time >= 2.0) {
+					Wait(0.01);
+					drive.update(0.0, 0.0, 0.0);
+					move = false;
+					printf("Check: %s, Shoot: %s, Move: %s, LastTime: %f, CurrentTime: %f\n", check ? "T" : "F", shoot ? "T" : "F", move ? "T" : "F", time, GetTime());
+				} else {
+					Wait(0.005);
+				}
+			}
 		}
 	}
 
