@@ -84,8 +84,8 @@ void PIDVelocityMotor::run() {
 			out = -1.0;
 		}
 		motor.SetSpeed(out);
-		printf("Name: %s KP: %f Target: %f CurrentRPM: %f, ScaledRPM: %f Error: %f Get(): %ld Out: %f\n", name, kp, target, (encoder.GetRate() / 360 * 60), ((encoder.GetRate() / 360 * 60) / scalar), error, encoder.Get(), out);
-	
+		printf("Name: %s KP: %f Target: %f CurrentRPM: %f, ScaledRPM: %f Error: %f Get(): %d Out: %f\n", name, kp, target, (encoder.GetRate() / 360 * 60), ((encoder.GetRate() / 360 * 60) / scalar), error, encoder.Get(), out);
+
 		lastError = error;
 		lastTime += deltaTime;
 	} else {

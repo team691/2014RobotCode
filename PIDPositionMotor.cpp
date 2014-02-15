@@ -90,7 +90,7 @@ void PIDPositionMotor::run() {
 			out = -1.0;
 		}
 		motor.run(out);
-		printf("Name: %s KP: %f Target: %f CurrentPos: %f Error: %f Get(): %ld Out: %f\n", name, kp, target, encoder.GetDistance(), error, encoder.Get(), out);
+		printf("Name: %s KP: %f Target: %f CurrentPos: %f Error: %f Get(): %d Out: %f\n", name, kp, target, encoder.GetDistance(), error, encoder.Get(), out);
 
 		lastError = error;
 		lastTime = GetTime();
