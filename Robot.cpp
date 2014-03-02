@@ -34,6 +34,7 @@ private:
 	Victor shooter;
 	Victor rIntake;
 	Victor lIntake;
+	Victor gate;
 
 	bool check;
 	bool shoot;
@@ -64,6 +65,7 @@ public:
 				 shooter(SHOOTER_VICTOR_SIDECAR, SHOOTER_VICTOR),
 				 rIntake(INTAKE_VICTOR_SIDECARS[0], R_INTAKE_VICTOR),
 				 lIntake(INTAKE_VICTOR_SIDECARS[1], L_INTAKE_VICTOR),
+				 gate(GATE_VICTOR_SIDECAR, GATE_VICTOR),
 				 check(false),
 				 shoot(false),
 				 move(false),
@@ -176,7 +178,7 @@ public:
 				}
 				clockwise *= scalar;
 			}
-			if(joy.GetRawButton(4)) {
+			if(joy.GetRawButton(2)) {
 				forward = 0.0;
 				right = 0.0;
 				clockwise = 0.0;
@@ -204,6 +206,13 @@ public:
 			} else {
 				rIntake.SetSpeed(0.0);
 				lIntake.SetSpeed(0.0);
+			}
+			if(joy.GetRawButton(6)) {
+				gate.SetSpeed(0.2);
+			} else if(joy.GetRawButton(4)) {
+				gate.SetSpeed(-0.2);
+			} else {
+				gate.SetSpeed(0.0);
 			}
 
 			Wait(0.005);

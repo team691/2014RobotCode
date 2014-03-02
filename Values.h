@@ -76,7 +76,10 @@
 	const int L_INTAKE_VICTOR = 6;
 	const int INTAKE_VICTOR_SIDECARS[2] = {SIDECAR, SIDECAR};
 
-	const int SHOOTER_VICTOR = 7;
+	const int GATE_VICTOR = 7;
+	const int GATE_VICTOR_SIDECAR = SIDECAR;
+
+	const int SHOOTER_VICTOR = 8;
 	const int SHOOTER_VICTOR_SIDECAR = SIDECAR;
 
 	const int GOAL_PHOTOSENSOR = 1;
