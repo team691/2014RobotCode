@@ -9,7 +9,9 @@
 //Main Class
 class Robot : public SimpleRobot {
 private:
-	Joystick joy;
+	Joystick rJoy;
+	Joystick lJoy;
+	Joystick gamepad;
 	DriverStationLCD * dslcd;
 
 	Victor frMotor;
@@ -43,7 +45,9 @@ private:
 	AnalogTrigger photosensor;
 
 public:
-	Robot(void): joy(JOYSTICK),
+	Robot(void): rJoy(RIGHT_JOYSTICK),
+				 lJoy(LEFT_JOYSTICK),
+				 gamepad(GAMEPAD),
 				 dslcd(DriverStationLCD::GetInstance()),
 				 frMotor(DRIVE_VICTOR_SIDECARS[0], FR_DRIVE_VICTOR),
 				 flMotor(DRIVE_VICTOR_SIDECARS[1], FL_DRIVE_VICTOR),
@@ -153,32 +157,32 @@ public:
 	void OperatorControl(void) {
 		printf("Operator control enabled!\n");
 		while(IsEnabled() && IsOperatorControl()) {
-			if(fabs(joy.GetRawAxis(2)) < 0.2) {
+			if(fabs(rJoy.GetRawAxis(2)) < 0.2) {
 				forward = 0.0;
 			} else {
-				forward = joy.GetRawAxis(2);
+				forward = rJoy.GetRawAxis(2);
 				forward *= fabs(forward);
 				forward *= scalar;
 			}
-			if(fabs(joy.GetRawAxis(1)) < 0.2) {
+			if(fabs(rJoy.GetRawAxis(1)) < 0.2) {
 				right = 0.0;
 			} else {
-				right = joy.GetRawAxis(1);
+				right = rJoy.GetRawAxis(1);
 				right *= fabs(right);
 				right *= scalar;
 			}
-			if(fabs(joy.GetRawAxis(3)) < 0.2) {
+			if(fabs(lJoy.GetRawAxis(1)) < 0.2) {
 				clockwise = 0.0;
 			} else {
-				clockwise = joy.GetRawAxis(3);
-				if(fabs(clockwise) <= 0.5) {
-					clockwise *= 0.5;
-				} else {
+				clockwise = lJoy.GetRawAxis(1);
+				//if(fabs(clockwise) <= 0.5) {
+				//	clockwise *= 0.5;
+				//} else {
 					clockwise *= fabs(clockwise);
-				}
+				//}
 				clockwise *= scalar;
 			}
-			if(joy.GetRawButton(2)) {
+			if(rJoy.GetRawButton(1) || lJoy.GetRawButton(1)) {
 				forward = 0.0;
 				right = 0.0;
 				clockwise = 0.0;
@@ -192,24 +196,21 @@ public:
 			dslcd->PrintfLine(DriverStationLCD::kUser_Line4, "Time: %f", GetTime());
 			dslcd->UpdateLCD();
 
-			if(joy.GetRawButton(1)) {
-				shooter.SetSpeed(1.0);
-			} else {
+			if(fabs(gamepad.GetRawAxis(3)) < 0.9) {
 				shooter.SetSpeed(0.0);
-			}
-			if(joy.GetRawButton(5)) {
-				rIntake.SetSpeed(-1.0);
-				lIntake.SetSpeed(1.0);
-			} else if(joy.GetRawButton(3)) {
-				rIntake.SetSpeed(1.0);
-				lIntake.SetSpeed(-1.0);
 			} else {
+				shooter.SetSpeed(1.0);
+			}
+			if(fabs(gamepad.GetRawAxis(2)) < 0.2) {
 				rIntake.SetSpeed(0.0);
 				lIntake.SetSpeed(0.0);
+			} else {
+				rIntake.SetSpeed(gamepad.GetRawAxis(2));
+				lIntake.SetSpeed(-gamepad.GetRawAxis(2));
 			}
-			if(joy.GetRawButton(6)) {
+			if(gamepad.GetRawButton(5)) {
 				gate.SetSpeed(0.2);
-			} else if(joy.GetRawButton(4)) {
+			} else if(gamepad.GetRawButton(6)) {
 				gate.SetSpeed(-0.2);
 			} else {
 				gate.SetSpeed(0.0);

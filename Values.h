@@ -3,7 +3,9 @@
 #ifndef VALUES_H
 #define VALUES_H
 
-	const int JOYSTICK = 1;
+	const int RIGHT_JOYSTICK = 1;
+	const int LEFT_JOYSTICK = 2;
+	const int GAMEPAD = 3;
 
 	const int ANALOG_MODULE = 1;
 	const int SIDECAR = 1;
