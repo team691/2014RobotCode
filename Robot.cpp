@@ -39,6 +39,7 @@ private:
 	Victor gate;
 
 	bool check;
+	bool setup;
 	bool shoot;
 	bool move;
 	double time;
@@ -71,6 +72,7 @@ public:
 				 lIntake(INTAKE_VICTOR_SIDECARS[1], L_INTAKE_VICTOR),
 				 gate(GATE_VICTOR_SIDECAR, GATE_VICTOR),
 				 check(false),
+				 setup(false),
 				 shoot(false),
 				 move(false),
 				 time(GetTime()),
@@ -110,40 +112,61 @@ public:
 	 */
 	void Autonomous(void) {
 		printf("Autonomous mode enabled!\n");
-		check = true;
-		shoot = false;
+		setup = true;
+		check = false;
 		move = false;
+		shoot = false;
 		time = GetTime();
-		printf("Check: %s, Shoot: %s, Move: %s, LastTime: %f, CurrentTime: %f\n", check ? "T" : "F", shoot ? "T" : "F", move ? "T" : "F", time, GetTime());
+		printf("Check: %s, Setup: %s, Shoot: %s, Move: %s, LastTime: %f, CurrentTime: %f\n", check ? "T" : "F", setup ? "T" : "F", shoot ? "T" : "F", move ? "T" : "F", time, GetTime());
 		while(IsEnabled() && IsAutonomous()) {
+			if(setup) {
+				gate.SetSpeed(0.4);
+				rIntake.SetSpeed(-1.0);
+				lIntake.SetSpeed(1.0);
+				if(GetTime() - time >= 0.5) {
+					gate.SetSpeed(0.0);
+				}
+				if(GetTime() - time >= 5.0) {
+					//rIntake.SetSpeed(0.0);
+					//lIntake.SetSpeed(0.0);
+					setup = false;
+					check = true;
+					time = GetTime();
+					printf("Check: %s, Setup: %s, Shoot: %s, Move: %s, LastTime: %f, CurrentTime: %f\n", check ? "T" : "F", setup ? "T" : "F", shoot ? "T" : "F", move ? "T" : "F", time, GetTime());
+				} else {
+					Wait(0.005);
+				}
+			}
 			if(check) {
 				if(photosensor.GetInWindow() == false) {
-					Wait(5.5);
+					//Wait(5.5);
 				}
 				check = false;
-				shoot = true;
+				move = true;
 				time = GetTime();
-				printf("Check: %s, Shoot: %s, Move: %s, LastTime: %f, CurrentTime: %f\n", check ? "T" : "F", shoot ? "T" : "F", move ? "T" : "F", time, GetTime());
+				printf("Check: %s, Setup: %s, Shoot: %s, Move: %s, LastTime: %f, CurrentTime: %f\n", check ? "T" : "F", setup ? "T" : "F", shoot ? "T" : "F", move ? "T" : "F", time, GetTime());
+			}
+			if(move) {
+				drive.update(0.5, 0.0, 0.0);
+				if(GetTime() - time >= 1.0) {
+					Wait(0.01);
+					drive.update(0.0, 0.0, 0.0);
+					move = false;
+					shoot = true;
+					printf("Check: %s, Setup: %s, Shoot: %s, Move: %s, LastTime: %f, CurrentTime: %f\n", check ? "T" : "F", setup ? "T" : "F", shoot ? "T" : "F", move ? "T" : "F", time, GetTime());
+				} else {
+					Wait(0.005);
+				}
 			}
 			if(shoot) {
 				shooter.SetSpeed(1.0);
 				if(GetTime() - time >= 2.0) {
 					shooter.SetSpeed(0.0);
+					rIntake.SetSpeed(0.0);
+					lIntake.SetSpeed(0.0);
 					shoot = false;
-					move = true;
 					time = GetTime();
-					printf("Check: %s, Shoot: %s, Move: %s, LastTime: %f, CurrentTime: %f\n", check ? "T" : "F", shoot ? "T" : "F", move ? "T" : "F", time, GetTime());
-				} else {
-					Wait(0.005);
-				}
-			}
-			if(move) {
-				drive.update(0.5, 0.0, 0.0);
-				if(GetTime() - time >= 2.0) {
-					Wait(0.01);
-					drive.update(0.0, 0.0, 0.0);
-					move = false;
-					printf("Check: %s, Shoot: %s, Move: %s, LastTime: %f, CurrentTime: %f\n", check ? "T" : "F", shoot ? "T" : "F", move ? "T" : "F", time, GetTime());
+					printf("Check: %s, Setup: %s, Shoot: %s, Move: %s, LastTime: %f, CurrentTime: %f\n", check ? "T" : "F", setup ? "T" : "F", shoot ? "T" : "F", move ? "T" : "F", time, GetTime());
 				} else {
 					Wait(0.005);
 				}
@@ -209,9 +232,9 @@ public:
 				lIntake.SetSpeed(-gamepad.GetRawAxis(2));
 			}
 			if(gamepad.GetRawButton(5)) {
-				gate.SetSpeed(0.2);
+				gate.SetSpeed(0.4);
 			} else if(gamepad.GetRawButton(6)) {
-				gate.SetSpeed(-0.2);
+				gate.SetSpeed(-0.4);
 			} else {
 				gate.SetSpeed(0.0);
 			}

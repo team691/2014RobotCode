@@ -10,34 +10,34 @@
 	const int ANALOG_MODULE = 1;
 	const int SIDECAR = 1;
 
-	const int FR_DRIVE_VICTOR		= 1;
-	const int FL_DRIVE_VICTOR		= 2;
-	const int BR_DRIVE_VICTOR		= 3;
-	const int BL_DRIVE_VICTOR		= 4;
+	const int FR_DRIVE_VICTOR		= 4;
+	const int FL_DRIVE_VICTOR		= 3;
+	const int BR_DRIVE_VICTOR		= 2;
+	const int BL_DRIVE_VICTOR		= 1;
 	const int DRIVE_VICTOR_SIDECARS[4]	= {SIDECAR, SIDECAR, SIDECAR, SIDECAR};
 										//FR			FL			BR			BL
 	const int DRIVE_VICTORS[4]			= {FR_DRIVE_VICTOR, FL_DRIVE_VICTOR, BR_DRIVE_VICTOR, BL_DRIVE_VICTOR};
 
-	const int FR_DRIVE_ENCODER_A	= 1;
-	const int FR_DRIVE_ENCODER_B	= 2;
+	const int FR_DRIVE_ENCODER_A	= 7;
+	const int FR_DRIVE_ENCODER_B	= 8;
 	const int FR_DRIVE_ENCODER_SIDECAR = SIDECAR;
 	const double FR_DRIVE_ENCODER_DISTANCE_PER_PULSE = 1.0;
 	const bool FR_DRIVE_ENCODER_REVERSE = false;
 
-	const int FL_DRIVE_ENCODER_A	= 3;
-	const int FL_DRIVE_ENCODER_B	= 4;
+	const int FL_DRIVE_ENCODER_A	= 5;
+	const int FL_DRIVE_ENCODER_B	= 6;
 	const int FL_DRIVE_ENCODER_SIDECAR = SIDECAR;
 	const double FL_DRIVE_ENCODER_DISTANCE_PER_PULSE = 1.0;
 	const bool FL_DRIVE_ENCODER_REVERSE = false;
 
-	const int BR_DRIVE_ENCODER_A	= 5;
-	const int BR_DRIVE_ENCODER_B	= 6;
+	const int BR_DRIVE_ENCODER_A	= 3;
+	const int BR_DRIVE_ENCODER_B	= 4;
 	const int BR_DRIVE_ENCODER_SIDECAR = SIDECAR;
 	const double BR_DRIVE_ENCODER_DISTANCE_PER_PULSE = 1.0;
 	const bool BR_DRIVE_ENCODER_REVERSE = false;
 
-	const int BL_DRIVE_ENCODER_A	= 7;
-	const int BL_DRIVE_ENCODER_B	= 8;
+	const int BL_DRIVE_ENCODER_A	= 1;
+	const int BL_DRIVE_ENCODER_B	= 2;
 	const int BL_DRIVE_ENCODER_SIDECAR = SIDECAR;
 	const double BL_DRIVE_ENCODER_DISTANCE_PER_PULSE = 1.0;
 	const bool BL_DRIVE_ENCODER_REVERSE = false;
