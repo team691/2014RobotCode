@@ -32,6 +32,8 @@ private:
 	double right;
 	double clockwise;
 	double scalar;
+	RobotDrive rawDrive;
+	bool useEncoders;
 
 	Victor shooter;
 	Victor rIntake;
@@ -67,6 +69,8 @@ public:
 				 right(0.0),
 				 clockwise(0.0),
 				 scalar(1.0),
+				 rawDrive(flMotor, blMotor, frMotor, brMotor),
+				 useEncoders(true),
 				 shooter(SHOOTER_VICTOR_SIDECAR, SHOOTER_VICTOR),
 				 rIntake(INTAKE_VICTOR_SIDECARS[0], R_INTAKE_VICTOR),
 				 lIntake(INTAKE_VICTOR_SIDECARS[1], L_INTAKE_VICTOR),
@@ -78,6 +82,9 @@ public:
 				 time(GetTime()),
 				 photosensor(GOAL_PHOTOSENSOR_MODULE, GOAL_PHOTOSENSOR)
 	{
+		rawDrive.SetInvertedMotor(RobotDrive::kFrontLeftMotor, true);
+		rawDrive.SetInvertedMotor(RobotDrive::kRearLeftMotor, true);
+		rawDrive.SetSafetyEnabled(false);
 		frEnc.SetDistancePerPulse(FR_DRIVE_ENCODER_DISTANCE_PER_PULSE);
 		flEnc.SetDistancePerPulse(FL_DRIVE_ENCODER_DISTANCE_PER_PULSE);
 		brEnc.SetDistancePerPulse(BR_DRIVE_ENCODER_DISTANCE_PER_PULSE);
@@ -147,10 +154,18 @@ public:
 				printf("Check: %s, Setup: %s, Shoot: %s, Move: %s, LastTime: %f, CurrentTime: %f\n", check ? "T" : "F", setup ? "T" : "F", shoot ? "T" : "F", move ? "T" : "F", time, GetTime());
 			}
 			if(move) {
-				drive.update(0.5, 0.0, 0.0);
+				if(useEncoders) {
+					drive.update(0.5, 0.0, 0.0);
+				} else {
+					rawDrive.MecanumDrive_Cartesian(0.0, 0.5, 0.0);
+				}
 				if(GetTime() - time >= 1.0) {
 					Wait(0.01);
-					drive.update(0.0, 0.0, 0.0);
+					if(useEncoders) {
+						drive.update(0.0, 0.0, 0.0);
+					} else {
+						rawDrive.MecanumDrive_Cartesian(0.0, 0.0, 0.0);
+					}
 					move = false;
 					shoot = true;
 					printf("Check: %s, Setup: %s, Shoot: %s, Move: %s, LastTime: %f, CurrentTime: %f\n", check ? "T" : "F", setup ? "T" : "F", shoot ? "T" : "F", move ? "T" : "F", time, GetTime());
@@ -210,8 +225,18 @@ public:
 				right = 0.0;
 				clockwise = 0.0;
 			}
-			drive.update(forward, right, clockwise);
-						//Forward  Right  Clockwise
+			if(rJoy.GetRawButton(2) && lJoy.GetRawButton(2)) {
+				useEncoders = true;
+			}
+			if(rJoy.GetRawButton(3) && lJoy.GetRawButton(3)) {
+				useEncoders = false;
+			}
+			if(useEncoders) {
+				drive.update(forward, right, clockwise);
+							//Forward  Right  Clockwise
+			} else {
+				rawDrive.MecanumDrive_Cartesian(right, forward, clockwise);
+			}
 			//printf("Forward: %f,\tRight: %f,\tClockwise: %f\n", forward, right, clockwise);
 			dslcd->PrintfLine(DriverStationLCD::kUser_Line1, "Forward: %f", forward);
 			dslcd->PrintfLine(DriverStationLCD::kUser_Line2, "Right: %f", right);
