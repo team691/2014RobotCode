@@ -36,6 +36,7 @@ private:
 	bool useEncoders;
 
 	Victor shooter;
+	DigitalInput shooterLimit;
 	Victor rIntake;
 	Victor lIntake;
 	Victor gate;
@@ -72,6 +73,7 @@ public:
 				 rawDrive(flMotor, blMotor, frMotor, brMotor),
 				 useEncoders(true),
 				 shooter(SHOOTER_VICTOR_SIDECAR, SHOOTER_VICTOR),
+				 shooterLimit(SHOOTER_LIMIT_SIDECAR, SHOOTER_LIMIT),
 				 rIntake(INTAKE_VICTOR_SIDECARS[0], R_INTAKE_VICTOR),
 				 lIntake(INTAKE_VICTOR_SIDECARS[1], L_INTAKE_VICTOR),
 				 gate(GATE_VICTOR_SIDECAR, GATE_VICTOR),
@@ -244,10 +246,12 @@ public:
 			dslcd->PrintfLine(DriverStationLCD::kUser_Line4, "Time: %f", GetTime());
 			dslcd->UpdateLCD();
 
-			if(fabs(gamepad.GetRawAxis(3)) < 0.9) {
-				shooter.SetSpeed(0.0);
-			} else {
+			if(fabs(gamepad.GetRawAxis(3)) > 0.9) {
 				shooter.SetSpeed(1.0);
+			} else if(shooterLimit.Get() == 0) {
+				shooter.SetSpeed(0.5);
+			} else {
+				shooter.SetSpeed(0.0);
 			}
 			if(fabs(gamepad.GetRawAxis(2)) < 0.2) {
 				rIntake.SetSpeed(0.0);
