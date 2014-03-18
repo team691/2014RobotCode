@@ -39,6 +39,8 @@ private:
 	DigitalInput shooterLimit;
 	Victor rIntake;
 	Victor lIntake;
+	Victor rIntakeSlider;
+	Victor lIntakeSlider;
 	Victor gate;
 
 	bool check;
@@ -76,6 +78,8 @@ public:
 				 shooterLimit(SHOOTER_LIMIT_SIDECAR, SHOOTER_LIMIT),
 				 rIntake(INTAKE_VICTOR_SIDECARS[0], R_INTAKE_VICTOR),
 				 lIntake(INTAKE_VICTOR_SIDECARS[1], L_INTAKE_VICTOR),
+				 rIntakeSlider(INTAKE_SLIDER_SIDECARS[0], R_INTAKE_SLIDER),
+				 lIntakeSlider(INTAKE_SLIDER_SIDECARS[1], L_INTAKE_SLIDER),
 				 gate(GATE_VICTOR_SIDECAR, GATE_VICTOR),
 				 check(false),
 				 setup(false),
@@ -132,12 +136,12 @@ public:
 				gate.SetSpeed(0.4);
 				rIntake.SetSpeed(-1.0);
 				lIntake.SetSpeed(1.0);
+				rIntakeSlider.SetSpeed(0.5);
+				lIntakeSlider.SetSpeed(0.5);
 				if(GetTime() - time >= 0.5) {
 					gate.SetSpeed(0.0);
-				}
-				if(GetTime() - time >= 5.0) {
-					//rIntake.SetSpeed(0.0);
-					//lIntake.SetSpeed(0.0);
+					rIntakeSlider.SetSpeed(0.0);
+					lIntakeSlider.SetSpeed(0.0);
 					setup = false;
 					check = true;
 					time = GetTime();
@@ -148,7 +152,7 @@ public:
 			}
 			if(check) {
 				if(photosensor.GetInWindow() == false) {
-					//Wait(5.5);
+					Wait(5.5);
 				}
 				check = false;
 				move = true;
@@ -259,6 +263,16 @@ public:
 			} else {
 				rIntake.SetSpeed(gamepad.GetRawAxis(2));
 				lIntake.SetSpeed(-gamepad.GetRawAxis(2));
+			}
+			if(gamepad.GetRawButton(1)) {
+				rIntakeSlider.SetSpeed(0.5);
+				lIntakeSlider.SetSpeed(0.5);
+			} else if(gamepad.GetRawButton(2)){
+				rIntakeSlider.SetSpeed(-0.5);
+				lIntakeSlider.SetSpeed(-0.5);
+			} else {
+				rIntakeSlider.SetSpeed(0.0);
+				lIntakeSlider.SetSpeed(0.0);
 			}
 			if(gamepad.GetRawButton(5)) {
 				gate.SetSpeed(0.4);

@@ -77,6 +77,9 @@
 	const int R_INTAKE_VICTOR = 5;
 	const int L_INTAKE_VICTOR = 6;
 	const int INTAKE_VICTOR_SIDECARS[2] = {SIDECAR, SIDECAR};
+	const int R_INTAKE_SLIDER = 9;
+	const int L_INTAKE_SLIDER = 10;
+	const int INTAKE_SLIDER_SIDECARS[2] = {SIDECAR, SIDECAR};
 
 	const int GATE_VICTOR = 7;
 	const int GATE_VICTOR_SIDECAR = SIDECAR;
