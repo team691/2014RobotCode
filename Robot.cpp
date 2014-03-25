@@ -48,7 +48,7 @@ private:
 	bool shoot;
 	bool move;
 	double time;
-	AnalogTrigger photosensor;
+	AnalogChannel photosensor;
 
 public:
 	Robot(void): rJoy(RIGHT_JOYSTICK),
@@ -103,7 +103,7 @@ public:
 		flEnc.Start();
 		brEnc.Start();
 		blEnc.Start();
-		photosensor.SetLimitsVoltage(GOAL_PHOTOSENSOR_LOWER_BOUND, GOAL_PHOTOSENSOR_UPPER_BOUND);
+		//photosensor.SetLimitsVoltage(GOAL_PHOTOSENSOR_LOWER_BOUND, GOAL_PHOTOSENSOR_UPPER_BOUND);
 	}
 
 	/**
@@ -132,16 +132,29 @@ public:
 		time = GetTime();
 		printf("Check: %s, Setup: %s, Shoot: %s, Move: %s, LastTime: %f, CurrentTime: %f\n", check ? "T" : "F", setup ? "T" : "F", shoot ? "T" : "F", move ? "T" : "F", time, GetTime());
 		while(IsEnabled() && IsAutonomous()) {
+			dslcd->PrintfLine(DriverStationLCD::kUser_Line6, "Photo: %f", photosensor.GetVoltage());
+			dslcd->UpdateLCD();
 			if(setup) {
 				gate.SetSpeed(0.4);
-				rIntake.SetSpeed(-1.0);
-				lIntake.SetSpeed(1.0);
-				rIntakeSlider.SetSpeed(0.5);
-				lIntakeSlider.SetSpeed(0.5);
-				if(GetTime() - time >= 0.5) {
+				if(useEncoders) {
+					drive.update(0.5, 0.0, 0.0);
+				} else {
+					rawDrive.MecanumDrive_Cartesian(0.0, 0.5, 0.0);
+				}
+				//rIntake.SetSpeed(-1.0);
+				//lIntake.SetSpeed(1.0);
+				//rIntakeSlider.SetSpeed(0.5);
+				//lIntakeSlider.SetSpeed(0.5);
+				if(GetTime() - time >= 0.25) {
 					gate.SetSpeed(0.0);
-					rIntakeSlider.SetSpeed(0.0);
-					lIntakeSlider.SetSpeed(0.0);
+					Wait(0.01);
+					if(useEncoders) {
+						drive.update(0.0, 0.0, 0.0);
+					} else {
+						rawDrive.MecanumDrive_Cartesian(0.0, 0.0, 0.0);
+					}
+					//rIntakeSlider.SetSpeed(0.0);
+					//lIntakeSlider.SetSpeed(0.0);
 					setup = false;
 					check = true;
 					time = GetTime();
@@ -151,7 +164,7 @@ public:
 				}
 			}
 			if(check) {
-				if(photosensor.GetInWindow() == false) {
+				if(photosensor.GetVoltage() > GOAL_PHOTOSENSOR_LOWER_BOUND && photosensor.GetVoltage() < GOAL_PHOTOSENSOR_UPPER_BOUND) {
 					Wait(5.5);
 				}
 				check = false;
@@ -181,10 +194,10 @@ public:
 			}
 			if(shoot) {
 				shooter.SetSpeed(1.0);
-				if(GetTime() - time >= 2.0) {
+				if(GetTime() - time >= 3.25) {
 					shooter.SetSpeed(0.0);
-					rIntake.SetSpeed(0.0);
-					lIntake.SetSpeed(0.0);
+					//rIntake.SetSpeed(0.0);
+					//lIntake.SetSpeed(0.0);
 					shoot = false;
 					time = GetTime();
 					printf("Check: %s, Setup: %s, Shoot: %s, Move: %s, LastTime: %f, CurrentTime: %f\n", check ? "T" : "F", setup ? "T" : "F", shoot ? "T" : "F", move ? "T" : "F", time, GetTime());
@@ -222,7 +235,10 @@ public:
 				//if(fabs(clockwise) <= 0.5) {
 				//	clockwise *= 0.5;
 				//} else {
-					clockwise *= fabs(clockwise);
+					//clockwise *= fabs(clockwise);
+					//if(!rJoy.GetRawButton(4) && !lJoy.GetRawButton(4) && !rJoy.GetRawButton(5) && !lJoy.GetRawButton(5)) {
+					//	clockwise *= 0.75;
+					//}
 				//}
 				clockwise *= scalar;
 			}
@@ -274,9 +290,9 @@ public:
 				rIntakeSlider.SetSpeed(0.0);
 				lIntakeSlider.SetSpeed(0.0);
 			}
-			if(gamepad.GetRawButton(5)) {
+			if(gamepad.GetRawButton(6)) {
 				gate.SetSpeed(0.4);
-			} else if(gamepad.GetRawButton(6)) {
+			} else if(gamepad.GetRawButton(5)) {
 				gate.SetSpeed(-0.4);
 			} else {
 				gate.SetSpeed(0.0);

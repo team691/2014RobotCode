@@ -53,10 +53,10 @@
 	const bool DRIVE_ENCODER_REVERSES[4] = {FR_DRIVE_ENCODER_REVERSE, FL_DRIVE_ENCODER_REVERSE, BR_DRIVE_ENCODER_REVERSE, BL_DRIVE_ENCODER_REVERSE};
 
 	const double DRIVE_PID_SCALAR = 700.0;
-	const double FR_DRIVE_PID_KP = 0.05;
-	const double FL_DRIVE_PID_KP = 0.05;
-	const double BR_DRIVE_PID_KP = 0.05;
-	const double BL_DRIVE_PID_KP = 0.05;
+	const double FR_DRIVE_PID_KP = 0.2;
+	const double FL_DRIVE_PID_KP = 0.2;
+	const double BR_DRIVE_PID_KP = 0.2;
+	const double BL_DRIVE_PID_KP = 0.2;
 	const double FR_DRIVE_PID_KI = 1.0;
 	const double FL_DRIVE_PID_KI = 1.0;
 	const double BR_DRIVE_PID_KI = 1.0;
