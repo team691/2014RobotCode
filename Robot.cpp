@@ -11,7 +11,7 @@ class Robot : public SimpleRobot {
 private:
 	Joystick rJoy;
 	Joystick lJoy;
-	Joystick gamepad;
+	Joystick shooterJoy;
 	DriverStationLCD * dslcd;
 
 	Victor frMotor;
@@ -53,7 +53,7 @@ private:
 public:
 	Robot(void): rJoy(RIGHT_JOYSTICK),
 				 lJoy(LEFT_JOYSTICK),
-				 gamepad(GAMEPAD),
+				 shooterJoy(SHOOTER_JOYSTICK),
 				 dslcd(DriverStationLCD::GetInstance()),
 				 frMotor(DRIVE_VICTOR_SIDECARS[0], FR_DRIVE_VICTOR),
 				 flMotor(DRIVE_VICTOR_SIDECARS[1], FL_DRIVE_VICTOR),
@@ -193,7 +193,7 @@ public:
 				}
 			}
 			if(shoot) {
-				shooter.SetSpeed(1.0);
+				shooter.SetSpeed(-1.0);
 				if(GetTime() - time >= 3.25) {
 					shooter.SetSpeed(0.0);
 					//rIntake.SetSpeed(0.0);
@@ -266,33 +266,33 @@ public:
 			dslcd->PrintfLine(DriverStationLCD::kUser_Line4, "Time: %f", GetTime());
 			dslcd->UpdateLCD();
 
-			if(fabs(gamepad.GetRawAxis(3)) > 0.9) {
-				shooter.SetSpeed(1.0);
+			if(shooterJoy.GetRawButton(1)) {
+				shooter.SetSpeed(-1.0);
 			} else if(shooterLimit.Get() == 0) {
-				shooter.SetSpeed(0.5);
+				shooter.SetSpeed(-0.5);
 			} else {
 				shooter.SetSpeed(0.0);
 			}
-			if(fabs(gamepad.GetRawAxis(2)) < 0.2) {
+			if(fabs(shooterJoy.GetRawAxis(2)) < 0.2) {
 				rIntake.SetSpeed(0.0);
 				lIntake.SetSpeed(0.0);
 			} else {
-				rIntake.SetSpeed(gamepad.GetRawAxis(2));
-				lIntake.SetSpeed(-gamepad.GetRawAxis(2));
+				rIntake.SetSpeed(shooterJoy.GetRawAxis(2));
+				lIntake.SetSpeed(-shooterJoy.GetRawAxis(2));
 			}
-			if(gamepad.GetRawButton(1)) {
+			if(shooterJoy.GetRawButton(3)) {
 				rIntakeSlider.SetSpeed(0.5);
 				lIntakeSlider.SetSpeed(0.5);
-			} else if(gamepad.GetRawButton(2)){
+			} else if(shooterJoy.GetRawButton(2)){
 				rIntakeSlider.SetSpeed(-0.5);
 				lIntakeSlider.SetSpeed(-0.5);
 			} else {
 				rIntakeSlider.SetSpeed(0.0);
 				lIntakeSlider.SetSpeed(0.0);
 			}
-			if(gamepad.GetRawButton(6)) {
+			if(shooterJoy.GetRawButton(6)) {
 				gate.SetSpeed(0.4);
-			} else if(gamepad.GetRawButton(5)) {
+			} else if(shooterJoy.GetRawButton(7)) {
 				gate.SetSpeed(-0.4);
 			} else {
 				gate.SetSpeed(0.0);

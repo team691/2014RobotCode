@@ -5,7 +5,7 @@
 
 	const int RIGHT_JOYSTICK = 1;
 	const int LEFT_JOYSTICK = 2;
-	const int GAMEPAD = 3;
+	const int SHOOTER_JOYSTICK = 3;
 
 	const int ANALOG_MODULE = 1;
 	const int SIDECAR = 1;
